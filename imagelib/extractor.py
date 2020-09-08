@@ -155,7 +155,7 @@ class Extractor:
 
         for graph in graph_list:
             for i in range(len(graph)):
-                blank1[crop.shape[0] - int(graph[i]), i] = [255, 255, 255]
+                blank1[crop.shape[0] - int(graph[i]) - 1, i] = [255, 255, 255]
 
         return graph_list, end_of_x, blank1
 
