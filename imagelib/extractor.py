@@ -133,7 +133,7 @@ class Extractor:
         blank1 = np.zeros(crop.shape, np.uint8)
         cv2.drawContours(blank1, graph_lines, -1, (255, 255, 255))
         blank1 = cv2.dilate(blank1, np.ones((3, 3), np.uint8), iterations=1)
-        cv2.imwrite('./test.png', blank1)
+        # cv2.imwrite('./test.png', blank1)
         graph_lines, _ = cv2.findContours(cv2.cvtColor(blank1, cv2.COLOR_BGR2GRAY), cv2.RETR_TREE,
                                           cv2.CHAIN_APPROX_NONE)  # find graph's values
 
@@ -151,6 +151,12 @@ class Extractor:
 
         # reconnect graph when they're broken
         graph_list = self.__reconnect_line(graph_list, end_of_x)
+        blank1 = np.zeros(crop.shape, np.uint8)
+
+        for graph in graph_list:
+            for i in range(len(graph)):
+                blank1[crop.shape[0] - graph[i], i] = [255, 255, 255]
+
         return graph_list, end_of_x, blank1
 
     def __graph_left(self, crop):
@@ -207,6 +213,7 @@ class Extractor:
 
         inter_black = cv2.cvtColor(intersection, cv2.COLOR_BGR2GRAY)
         inter_black = cv2.dilate(inter_black, np.ones((5, 5), np.uint8), iterations=1)
+        cv2.imwrite("./test.png", draw_graph)
 
         peak_candidate, _ = cv2.findContours(inter_black, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         return peak_candidate
@@ -232,7 +239,7 @@ class Extractor:
         for i in range(len(value_of_contour_list)):
             item = value_of_contour_list[i]
             if len(item) != 0:
-                real_value_list.append(y_limit - sum(item) / len(item))
+                real_value_list.append(int(y_limit - sum(item) / len(item)))
             else:
                 real_value_list.append(0)
 
