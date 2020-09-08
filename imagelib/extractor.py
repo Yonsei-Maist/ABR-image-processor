@@ -87,9 +87,9 @@ class Extractor:
 
         crop = self.__crop_by_axis(img)
 
-        graph_list, end_of_x, draw_graph = self.__graph_left(crop) if is_left else self.__graph_right(crop)
+        graph_list, end_of_x, draw_graph, mask = self.__graph_left(crop) if is_left else self.__graph_right(crop)
 
-        peak_candidate = self.__peak(crop, draw_graph)
+        peak_candidate = self.__peak(crop, draw_graph, mask)
         peak_list = []
 
         for candidate in peak_candidate:
@@ -100,16 +100,15 @@ class Extractor:
 
         result = []
         for line in graph_list:
-            peak = (-1, -1)
+            peak_point_list = []
             for x, y in peak_list:
                 y2 = line[x]
                 # find peak in graph
                 distance = Extractor.__calculate_distance(x, y, x, y2)
                 if distance < 10:
-                    peak = (x, y)
-                    break
+                    peak_point_list.append((x, y))
 
-            result.append({"graph": line, "peak": peak})
+            result.append({"graph": line, "peak": peak_point_list})
 
         return sorted(result, key=lambda v: v["graph"][0], reverse=True)
 
@@ -133,7 +132,7 @@ class Extractor:
         blank1 = np.zeros(crop.shape, np.uint8)
         cv2.drawContours(blank1, graph_lines, -1, (255, 255, 255))
         blank1 = cv2.dilate(blank1, np.ones((3, 3), np.uint8), iterations=1)
-        # cv2.imwrite('./test.png', blank1)
+
         graph_lines, _ = cv2.findContours(cv2.cvtColor(blank1, cv2.COLOR_BGR2GRAY), cv2.RETR_TREE,
                                           cv2.CHAIN_APPROX_NONE)  # find graph's values
 
@@ -155,9 +154,23 @@ class Extractor:
 
         for graph in graph_list:
             for i in range(len(graph)):
-                blank1[crop.shape[0] - int(graph[i]) - 1, i] = [255, 255, 255]
+                y = crop.shape[0] - int(graph[i]) - 1
+                x = i
 
-        return graph_list, end_of_x, blank1
+                blank1[y, x] = [255, 255, 255]
+                if y > 1:
+                    blank1[y - 1, x] = [255, 255, 255]
+
+                if y < crop.shape[0] - 1:
+                    blank1[y + 1, x] = [255, 255, 255]
+
+                if x > 0:
+                    blank1[y, x - 1] = [255, 255, 255]
+
+                if x < crop.shape[1] - 1:
+                    blank1[y, x + 1] = [255, 255, 255]
+
+        return graph_list, end_of_x, blank1, mask_rgb
 
     def __graph_left(self, crop):
         """
@@ -181,15 +194,17 @@ class Extractor:
 
         return self.__graph(crop, lower_color, upper_color)
 
-    def __peak(self, crop, draw_graph):
+    def __peak(self, crop, draw_graph, mask):
         """
         extract peak from image
         :param crop: cropped image
         :param draw_graph: image drown graph's contour
+        :param mask: first mask of graph image
         :return: peak candidates
         """
         # do threshold and reverse image
         _, threshold = cv2.threshold(crop, 80, 255, cv2.THRESH_BINARY_INV)
+        threshold = threshold & (255 - mask)
         black = threshold[:, :, 0]
 
         # extend shape of image to remove character in image
@@ -213,7 +228,6 @@ class Extractor:
 
         inter_black = cv2.cvtColor(intersection, cv2.COLOR_BGR2GRAY)
         inter_black = cv2.dilate(inter_black, np.ones((5, 5), np.uint8), iterations=1)
-        cv2.imwrite("./test.png", draw_graph)
 
         peak_candidate, _ = cv2.findContours(inter_black, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         return peak_candidate
