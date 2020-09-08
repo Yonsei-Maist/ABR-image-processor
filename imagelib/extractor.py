@@ -1,6 +1,6 @@
 """
 Image lib
-@Author Chanwoo Kwon, Yonsei University Researcher, 2020.05~
+@Author Chanwoo Kwon, Yonsei Univ. Researcher, 2020.05~
 """
 
 import cv2
@@ -22,7 +22,7 @@ class Extractor:
         :return: graph list from image
         """
         image = cv2.imread(image_path)
-        return self.extact_image(image, is_left)
+        return self.extract_image(image, is_left)
 
     def extract_image(self, image, is_left: bool):
         """
