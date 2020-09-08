@@ -198,19 +198,10 @@ class Extractor:
 
         blank2 = np.zeros(crop.shape, np.uint8)
 
-        # draw small contour (means peak's mark)
-        area_list = []
         for i in range(len(line_candidates)):
             cnt = line_candidates[i]
             area = cv2.contourArea(cnt)
-            area_list.append(area)
-
-        max_occur = max(set(area_list), key=area_list.count)
-
-        for i in range(len(line_candidates)):
-            cnt = line_candidates[i]
-            area = cv2.contourArea(cnt)
-            if area == max_occur:  # remove character candidate (peak's marks are same size and most occurred)
+            if area == 22:  # max_occur:  # remove character candidate (peak's marks are same size and most occurred)
                 cv2.drawContours(blank2, line_candidates, i, (0, 255, 0))
         intersection = draw_graph & blank2  # peak's mark is overlap with graph line
 
