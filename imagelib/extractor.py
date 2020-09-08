@@ -39,6 +39,14 @@ class Extractor:
 
         return sorted(res, key=lambda v: v[0], reverse=True)
 
+    def extract_image_with_peak(self, image, is_left: bool):
+        """
+        extract graph and peak value from image (external interface)
+        :param image: image object (opencv)
+        :param is_left:  is left ear's graph
+        :return: graph and peak list from image
+        """
+        return self.__get_vector_and_peak(image, is_left)
 
     def extract_with_peak(self, image_path, is_left: bool):
         """
@@ -48,7 +56,7 @@ class Extractor:
         :return: graph and peak list from image
         """
         image_mat = cv2.imread(image_path)
-        return self.__get_vector_and_peak(image_mat, is_left)
+        return self.extract_image_with_peak(image_mat, is_left)
 
     def __crop_by_axis(self, img):
         """
@@ -103,7 +111,7 @@ class Extractor:
 
             result.append({"graph": line, "peak": peak})
 
-        return result
+        return sorted(result, key=lambda v: v["graph"][0], reverse=True)
 
     def __graph(self, crop, lower_color, upper_color):
         """
