@@ -1,6 +1,6 @@
 """
 Image lib
-@Author Chanwoo Kwon, Yonsei University Researcher, 2020.05~
+@Author Chanwoo Kwon, Yonsei Univ. Researcher, 2020.05~
 """
 
 import cv2
@@ -21,15 +21,24 @@ class Extractor:
         :param is_left: is left ear's graph
         :return: graph list from image
         """
-        image_mat = cv2.imread(image_path)
+        image = cv2.imread(image_path)
+        return self.extract_image(image, is_left)
 
-        crop = self.__crop_by_axis(image_mat)
+    def extract_image(self, image, is_left: bool):
+        """
+        extract graph only (external interface)
+        :param image: graph image's object(opencv)
+        :param is_left: is left ear's graph
+        :return: graph list from image
+        """
+        crop = self.__crop_by_axis(image)
         if is_left:
             res = self.__graph_left(crop)[0]
         else:
             res = self.__graph_right(crop)[0]
 
         return sorted(res, key=lambda v: v[0], reverse=True)
+
 
     def extract_with_peak(self, image_path, is_left: bool):
         """
