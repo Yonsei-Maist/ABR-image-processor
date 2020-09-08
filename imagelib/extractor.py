@@ -25,9 +25,11 @@ class Extractor:
 
         crop = self.__crop_by_axis(image_mat)
         if is_left:
-            return self.__graph_left(crop)[0]
+            res = self.__graph_left(crop)[0]
         else:
-            return self.__graph_right(crop)[0]
+            res = self.__graph_right(crop)[0]
+
+        return sorted(res, key=lambda v: v[0], reverse=True)
 
     def extract_with_peak(self, image_path, is_left: bool):
         """
@@ -114,6 +116,7 @@ class Extractor:
         blank1 = np.zeros(crop.shape, np.uint8)
         cv2.drawContours(blank1, graph_lines, -1, (255, 255, 255))
         blank1 = cv2.dilate(blank1, np.ones((3, 3), np.uint8), iterations=1)
+        cv2.imwrite('./test.png', blank1)
         graph_lines, _ = cv2.findContours(cv2.cvtColor(blank1, cv2.COLOR_BGR2GRAY), cv2.RETR_TREE,
                                           cv2.CHAIN_APPROX_NONE)  # find graph's values
 
@@ -140,7 +143,7 @@ class Extractor:
         :return: same to __graph
         """
         lower_color = (200, 0, 0)
-        upper_color = (255, 0, 80)
+        upper_color = (255, 100, 100)
 
         return self.__graph(crop, lower_color, upper_color)
 
@@ -288,6 +291,9 @@ class Extractor:
 
         # reconnect
         for item in chain:
+            if need_reconnect[item[0]] == -1 or need_reconnect[item[1]] == -1:
+                continue
+
             first_graph = need_reconnect[item[0]]["graph"][0]
             second_graph = need_reconnect[item[1]]["graph"][0]
             first_end = need_reconnect[item[0]]["graph"][1][1]
