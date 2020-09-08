@@ -201,7 +201,7 @@ class Extractor:
         for i in range(len(line_candidates)):
             cnt = line_candidates[i]
             area = cv2.contourArea(cnt)
-            if area == 22:  # max_occur:  # remove character candidate (peak's marks are same size and most occurred)
+            if 0 < area <= 22:  # remove character candidate (peak's marks are same size and most occurred)
                 cv2.drawContours(blank2, line_candidates, i, (0, 255, 0))
         intersection = draw_graph & blank2  # peak's mark is overlap with graph line
 
