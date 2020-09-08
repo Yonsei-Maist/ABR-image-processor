@@ -108,7 +108,7 @@ class Extractor:
                 if distance < 10:
                     peak_point_list.append((x, y))
 
-            result.append({"graph": line, "peak": peak_point_list})
+            result.append({"graph": line, "peak": sorted(peak_point_list, key=lambda v: v[0])})
 
         return sorted(result, key=lambda v: v["graph"][0], reverse=True)
 
