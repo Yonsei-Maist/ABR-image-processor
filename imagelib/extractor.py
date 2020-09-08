@@ -155,7 +155,7 @@ class Extractor:
 
         for graph in graph_list:
             for i in range(len(graph)):
-                blank1[crop.shape[0] - graph[i], i] = [255, 255, 255]
+                blank1[crop.shape[0] - int(graph[i]), i] = [255, 255, 255]
 
         return graph_list, end_of_x, blank1
 
@@ -239,7 +239,7 @@ class Extractor:
         for i in range(len(value_of_contour_list)):
             item = value_of_contour_list[i]
             if len(item) != 0:
-                real_value_list.append(int(y_limit - sum(item) / len(item)))
+                real_value_list.append(y_limit - sum(item) / len(item))
             else:
                 real_value_list.append(0)
 
