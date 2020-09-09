@@ -144,7 +144,7 @@ class Extractor:
         # check end of x-value from graphs
         end_of_x = 0
         for graph_line in graph_list:
-            one_of_end = graph_line[1][1]
+            one_of_end = graph_line["st_end"]["end"]
             if end_of_x == 0 or end_of_x < one_of_end:
                 end_of_x = one_of_end
 
@@ -257,7 +257,7 @@ class Extractor:
             else:
                 real_value_list.append(0)
 
-        return real_value_list, self.__find_start_end_in_line(real_value_list)
+        return {"value": real_value_list, "st_end": self.__find_start_end_in_line(real_value_list)}
 
     @staticmethod
     def __calculate_distance(x1, y1, x2, y2):
@@ -283,12 +283,12 @@ class Extractor:
 
         # check the line need to connect
         for graph_line in extracted_lines:
-            start = graph_line[1][0]
-            end = graph_line[1][1]
+            start = graph_line["st_end"]["start"]
+            end = graph_line["st_end"]["end"]
             if start != 0 or end != end_of_x:
                 need_reconnect.append({"graph": graph_line, "already_connected": False})
             else:
-                new_graph_list.append(graph_line[0][:end_of_x])
+                new_graph_list.append(graph_line["value"][:end_of_x])
 
         # save information of reconnection
         chain = []
@@ -299,10 +299,10 @@ class Extractor:
                 continue
 
             graph_line = need_graph_line["graph"]
-            start = graph_line[1][0]
-            graph = graph_line[0]
+            end = graph_line["st_end"]["end"]
+            graph = graph_line["value"]
 
-            if start != 0:
+            if end != 0:
                 for j in range(len(need_reconnect)):
                     need_graph_line_2 = need_reconnect[j]
                     already_connected_2 = need_graph_line_2["already_connected"]
@@ -310,32 +310,45 @@ class Extractor:
                         continue
 
                     graph_line_2 = need_graph_line_2["graph"]
-                    one_of_end = graph_line_2[1][1]
-                    graph_2 = graph_line_2[0]
-                    distance = Extractor.__calculate_distance(start, graph[start], one_of_end, graph_2[one_of_end])
+                    one_of_start = graph_line_2["st_end"]["start"]
+                    graph_2 = graph_line_2["value"]
+                    distance = Extractor.__calculate_distance(end, graph[end], one_of_start, graph_2[one_of_start])
 
                     if distance < 20:
-                        need_graph_line_2["already_connected"] = True
-                        chain.append((j, i))
+                        # need_graph_line_2["already_connected"] = True
+                        chain.append((i, j))
 
         # reconnect
-        for item in chain:
-            if need_reconnect[item[0]] == -1 or need_reconnect[item[1]] == -1:
-                continue
+        def combine(first_idx, second_idx: int):
+            if need_reconnect[first] == -1 or need_reconnect[second] == -1:
+                return
 
-            first_graph = need_reconnect[item[0]]["graph"][0]
-            second_graph = need_reconnect[item[1]]["graph"][0]
-            first_end = need_reconnect[item[0]]["graph"][1][1]
-            second_st = need_reconnect[item[1]]["graph"][1][0]
-            second_end = need_reconnect[item[1]]["graph"][1][1]
+            first_graph = need_reconnect[first_idx]["graph"]["value"]
+            second_graph = need_reconnect[second_idx]["graph"]["value"]
+            first_end = need_reconnect[first_idx]["graph"]["st_end"]["end"]
+            second_st = need_reconnect[second_idx]["graph"]["st_end"]["start"]
+            second_end = need_reconnect[second_idx]["graph"]["st_end"]["end"]
             first_graph[second_st:second_end] = second_graph[second_st:second_end]
             first_graph[first_end:second_st] = [first_graph[first_end] for x in range(first_end, second_st)]
-            need_reconnect[item[1]] = -1
+
+            need_reconnect[first_idx]["graph"]["st_end"]["end"] = second_end
+
+            need_reconnect[second_idx] = -1
+
+        for i in range(len(chain)):
+            first, second = chain[i]
+            for j in range(i, len(chain)):
+                x, y = chain[j]
+
+                if x == second:
+                    combine(x, y)
+
+            combine(first, second)
 
         # remove rest
         for line in need_reconnect:
             if line != -1:
-                new_graph_list.append(line["graph"][0][:end_of_x])
+                new_graph_list.append(line["graph"]["value"][:end_of_x])
 
         return new_graph_list
 
@@ -358,7 +371,7 @@ class Extractor:
                 end = j
                 break
 
-        return st, end
+        return {"start": st, "end": end}
 
     def __peak_extractor(self, peak_point, y_limit):
         """
