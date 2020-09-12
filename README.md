@@ -18,15 +18,20 @@ pip install -U git+https://git@github.com/Yonsei-Maist/ABR-image-processor.git
 
 ## Usage
 ```
-extractor = Extractor()  # initialize
+# initialize
+extractor = Extractor()
 
-extractor.extract(file_path, is_left_ear)  # read graph from image path
+# read graph from image path
+extractor.extract(file_path, is_left_ear)
 
-extractor.extract_image(image_object_from_opencv, is_left_ear)  # read graph from image object read by opencv
+# read graph from image object read by opencv
+extractor.extract_image(image_object_from_opencv, is_left_ear)
 
-extractor.extract_with_peak(file_path, is_left_ear)  # read graph and peak from image path
+# read graph and peak from image path
+extractor.extract_with_peak(file_path, is_left_ear)
 
-extractor.extract_image_with_peak(image_object_from_opencv, is_left_ear)  # read graph and peak from image object read by opencv
+# read graph and peak from image object read by opencv
+extractor.extract_image_with_peak(image_object_from_opencv, is_left_ear)
 ```
 
 ## Author
