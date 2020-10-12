@@ -2,9 +2,9 @@ from imagelib.extractor import Extractor
 import matplotlib.pyplot as plt
 
 extractor = Extractor()
-graph_list = extractor.extract_with_peak("/Users/gwonchan-u/Downloads/Infant ABR 51-110/test9.png", True)
+graph_list = extractor.extract("/Users/gwonchan-u/Downloads/Infant ABR 51-110/test11.png", 667, True)
 
-# print(graph_list)
+print(len(graph_list[0]))
 
 for graph_info in graph_list:
     graph = graph_info["graph"]

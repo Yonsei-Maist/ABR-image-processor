@@ -14,7 +14,7 @@ class Extractor:
     extract vector value from graph image
     """
 
-    def extract(self, image_path, is_left: bool):
+    def extract(self, image_path, width_size, is_left: bool):
         """
         extract graph only (external interface)
         :param image_path: graph image's path
@@ -22,9 +22,9 @@ class Extractor:
         :return: graph list from image
         """
         image = cv2.imread(image_path)
-        return self.extract_image(image, is_left)
+        return self.extract_image(image, width_size, is_left)
 
-    def extract_image(self, image, is_left: bool):
+    def extract_image(self, image, width_size, is_left: bool):
         """
         extract graph only (external interface)
         :param image: graph image's object(opencv)
@@ -32,6 +32,8 @@ class Extractor:
         :return: graph list from image
         """
         crop = self.__crop_by_axis(image)
+        crop = cv2.resize(crop, dsize=(width_size, crop.shape[0]), interpolation=cv2.INTER_LINEAR)
+        # cv2.imwrite("tt.png", crop)
         if is_left:
             res = self.__graph_left(crop)[0]
         else:
