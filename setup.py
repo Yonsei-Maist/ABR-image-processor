@@ -7,7 +7,9 @@ setup(
     author           = 'Chanwoo Gwon',
     author_email     = 'arknell@yonsei.ac.kr',
     url              = 'https://github.com/Yonsei-Maist/ABR-image-processor.git',
-    install_requires = [ ],
+    install_requires = [
+        "opencv-python"
+    ],
     packages         = find_packages(exclude = ['docs', 'tests*']),
     keywords         = ['opencv', 'abr'],
     python_requires  = '>=3',

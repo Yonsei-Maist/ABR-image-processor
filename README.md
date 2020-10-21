@@ -11,7 +11,6 @@ opencv-python lastest
 ```
 
 ## Install
-Need authorization
 ```
 pip install -U git+https://git@github.com/Yonsei-Maist/ABR-image-processor.git
 ```
