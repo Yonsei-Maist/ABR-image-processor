@@ -2,13 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name             = 'abr-image-processor',
-    version          = '1.1',
+    version          = '1.2',
     description      = 'image processor module for ABR',
     author           = 'Chanwoo Gwon',
     author_email     = 'arknell@yonsei.ac.kr',
     url              = 'https://github.com/Yonsei-Maist/ABR-image-processor.git',
     install_requires = [
-        "opencv-python"
     ],
     packages         = find_packages(exclude = ['docs', 'tests*']),
     keywords         = ['opencv', 'abr'],
