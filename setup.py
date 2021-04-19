@@ -8,6 +8,7 @@ setup(
     author_email     = 'arknell@yonsei.ac.kr',
     url              = 'https://github.com/Yonsei-Maist/ABR-image-processor.git',
     install_requires = [
+        "numpy==1.19.5"
     ],
     packages         = find_packages(exclude = ['docs', 'tests*']),
     keywords         = ['opencv', 'abr'],
